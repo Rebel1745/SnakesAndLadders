@@ -9,30 +9,27 @@ public class DiceRoller : MonoBehaviour
 
     [SerializeField] TMP_Text diceCountText;
 
-    public bool IsDoneRolling = false;
-    public int DiceTotal;
-
     void Start()
     {
         instance = this;
         SetDiceText("?");
     }
 
-    void NewTurn()
-    {
-        IsDoneRolling = false;
-    }
-
     public void RollTheDice()
     {
+        // Have we already rolled the dice?
+        if (GameManager.instance.IsDoneRolling)
+            return;
+
         // random number between 1 and 6 for the dice roll
         int rolledNum = Random.Range(1, 7);
-        DiceTotal = rolledNum;
+        GameManager.instance.DiceTotal = rolledNum;
         SetDiceText(rolledNum.ToString());
-        IsDoneRolling = true;
+        GameManager.instance.IsDoneRolling = true;
+        GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " click piece to move");
     }
 
-    void SetDiceText(string text)
+    public void SetDiceText(string text)
     {
         diceCountText.text = text;
     }

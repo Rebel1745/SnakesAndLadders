@@ -5,7 +5,10 @@ using UnityEngine;
 public class PlayerPiece : MonoBehaviour
 {
     [SerializeField] Tile startingTile;
+    [SerializeField] int playerId;
     Tile currentTile;
+
+    bool isAnimating = false;
 
     // movement variables
     Tile[] moveQueue;
@@ -32,6 +35,12 @@ public class PlayerPiece : MonoBehaviour
 
     void MovePiece()
     {
+        // have we finished animating?
+        if (!isAnimating)
+            return;
+
+        GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " moving " + (moveQueue.Length - moveQueueIndex) + " more squares");
+
         if(Vector3.Distance(this.transform.position, targetPosition) < smoothDistance)
         {
             AdvanceMoveQueue();
@@ -39,7 +48,7 @@ public class PlayerPiece : MonoBehaviour
 
         targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight;
         // TODO: Why is this not working? it is giving me wrong numbers
-        print(heightTime + " / " + smoothTime + " = " + heightTime / smoothTime);
+        //print(heightTime + " / " + smoothTime + " = " + heightTime / smoothTime);
         targetPositionWithHeight = new Vector3(targetPosition.x, targetHeight , targetPosition.z);
 
         this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPositionWithHeight, ref velocity, smoothTime);
@@ -54,6 +63,11 @@ public class PlayerPiece : MonoBehaviour
             SetNewTargetPosition(moveQueue[moveQueueIndex].transform.position);
             moveQueueIndex++;
         }
+        else
+        {
+            isAnimating = false;
+            GameManager.instance.IsDoneAnimating = true;
+        }
     }
 
     void SetNewTargetPosition(Vector3 pos)
@@ -65,13 +79,22 @@ public class PlayerPiece : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (!DiceRoller.instance.IsDoneRolling)
+        // have we rolled the dice?
+        if (!GameManager.instance.IsDoneRolling)
+            return;
+        // have we already clicked a piece?
+        if (GameManager.instance.IsDoneClicking)
+            return;
+
+        // Check if this piece belongs to us, if not then we can't click on it
+        if (playerId != GameManager.instance.CurrentPlayerId)
             return;
 
         // move this piece
-        int spacesToMove = DiceRoller.instance.DiceTotal;
+        int spacesToMove = GameManager.instance.DiceTotal;
+        GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " moving " + spacesToMove + " more squares");
 
-        print("Clicked. Moving " + spacesToMove + " spaces");
+        //print("Clicked. Moving " + spacesToMove + " spaces");
         moveQueue = new Tile[spacesToMove];
 
         Tile finalTile = currentTile;
@@ -90,8 +113,11 @@ public class PlayerPiece : MonoBehaviour
             moveQueue[i] = finalTile;
         }
 
-        moveQueueIndex = 0;
+        // TODO: check to see if the destination tile is legal
 
+        moveQueueIndex = 0;
         currentTile = finalTile;
+        GameManager.instance.IsDoneClicking = true;
+        isAnimating = true;
     }
 }
