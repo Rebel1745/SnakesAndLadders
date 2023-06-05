@@ -2743,13 +2743,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infoText: {fileID: 864837525}
+  State: 0
   TotalPlayers: 2
   CurrentPlayerId: 0
   CurrentPlayerName: 
   DiceTotal: 0
-  IsDoneRolling: 0
-  IsDoneClicking: 0
-  IsDoneAnimating: 0
 --- !u!4 &745116616
 Transform:
   m_ObjectHideFlags: 0
@@ -9245,6 +9243,10 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
+      propertyPath: smoothTime
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
       propertyPath: StartingTile
       value: 
       objectReference: {fileID: 7951538576903384168}
@@ -9253,12 +9255,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7951538576903384168}
     - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
+      propertyPath: maxHeightMultiplier
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
+      propertyPath: smoothTimeMultiplier
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
       propertyPath: heightCurve.m_Curve.Array.size
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
       propertyPath: heightCurve.m_Curve.Array.data[1].time
-      value: 0.5
+      value: 0.19999695
       objectReference: {fileID: 0}
     - target: {fileID: 2669627739753420222, guid: 7c475ae3c11cdbd429611c7654a125a6, type: 3}
       propertyPath: heightCurve.m_Curve.Array.data[2].time

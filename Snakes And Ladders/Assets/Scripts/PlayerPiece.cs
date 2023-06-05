@@ -15,9 +15,11 @@ public class PlayerPiece : MonoBehaviour
     int moveQueueIndex;
     Vector3 targetPosition;
     Vector3 velocity = Vector3.zero;
-    [SerializeField] float smoothTime = 0.25f;
-    [SerializeField] float smoothDistance = 0.01f;
-    [SerializeField] float maxHeight = 0.5f;
+    readonly float smoothTime = 0.25f;
+    [SerializeField] int smoothTimeMultiplier = 1;
+    readonly float smoothDistance = 0.01f;
+    readonly float maxHeight = 0.5f;
+    [SerializeField] int maxHeightMultiplier = 1;
     [SerializeField] AnimationCurve heightCurve;
     Vector3 targetPositionWithHeight;
     float heightTime;
@@ -46,12 +48,12 @@ public class PlayerPiece : MonoBehaviour
             AdvanceMoveQueue();
         }
 
-        targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight;
-        // TODO: Why is this not working? it is giving me wrong numbers
-        //print(heightTime + " / " + smoothTime + " = " + heightTime / smoothTime);
-        targetPositionWithHeight = new Vector3(targetPosition.x, targetHeight , targetPosition.z);
+        targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight * maxHeightMultiplier;
 
-        this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPositionWithHeight, ref velocity, smoothTime);
+        targetPositionWithHeight = new Vector3(targetPosition.x, targetPosition.y + targetHeight , targetPosition.z);
+
+        this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPositionWithHeight, ref velocity, (smoothTime / (float)smoothTimeMultiplier));
+        
 
         heightTime += Time.deltaTime;
     }
@@ -65,8 +67,13 @@ public class PlayerPiece : MonoBehaviour
         }
         else
         {
+            //finished all animations, allow another roll if a 6 was rolled, otherwise move on to next turn
             isAnimating = false;
-            GameManager.instance.IsDoneAnimating = true;
+            if (moveQueue.Length == 6)
+                GameManager.instance.UpdateGameState(GameState.RollAgain);
+            else
+                GameManager.instance.UpdateGameState(GameState.NewTurn);
+            
         }
     }
 
@@ -79,11 +86,8 @@ public class PlayerPiece : MonoBehaviour
 
     private void OnMouseUp()
     {
-        // have we rolled the dice?
-        if (!GameManager.instance.IsDoneRolling)
-            return;
-        // have we already clicked a piece?
-        if (GameManager.instance.IsDoneClicking)
+        // are we waiting for a click?
+        if (GameManager.instance.State != GameState.WaitingForClick)
             return;
 
         // Check if this piece belongs to us, if not then we can't click on it
@@ -93,8 +97,7 @@ public class PlayerPiece : MonoBehaviour
         // move this piece
         int spacesToMove = GameManager.instance.DiceTotal;
         GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " moving " + spacesToMove + " more squares");
-
-        //print("Clicked. Moving " + spacesToMove + " spaces");
+        
         moveQueue = new Tile[spacesToMove];
 
         Tile finalTile = currentTile;
@@ -117,7 +120,9 @@ public class PlayerPiece : MonoBehaviour
 
         moveQueueIndex = 0;
         currentTile = finalTile;
-        GameManager.instance.IsDoneClicking = true;
         isAnimating = true;
+
+        // we have clicked on a valid piece, set it moving
+        GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
     }
 }

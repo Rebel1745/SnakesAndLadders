@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -8,8 +6,10 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [SerializeField] TMP_Text infoText;
 
+    public GameState State;
+
     // Players
-    string[] PlayerNames = { "One", "Two", "Three", "Four" };
+    readonly string[] PlayerNames = { "One", "Two", "Three", "Four" };
     public int TotalPlayers = 2;
     public int CurrentPlayerId;
     public string CurrentPlayerName;
@@ -17,42 +17,78 @@ public class GameManager : MonoBehaviour
     // Dice
     public int DiceTotal;
 
-    // States 
-    // TODO: Replace with enum
-    public bool IsDoneRolling = false;
-    public bool IsDoneClicking = false;
-    public bool IsDoneAnimating = false;
-
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         instance = this;
         CurrentPlayerName = PlayerNames[CurrentPlayerId];
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateGameState(GameState newState)
     {
-        if (IsDoneRolling && IsDoneClicking && IsDoneAnimating)
-            NewTurn();
+        State = newState;
+
+        switch (newState)
+        {
+            case GameState.WaitingForRoll:
+                WaitingForRoll();
+                break;
+            case GameState.WaitingForClick:
+                WaitingForClick();
+                break;
+            case GameState.WaitingForAnimation:
+                WaitingForAnimation();
+                break;
+            case GameState.NewTurn:
+                NewTurn();
+                break;
+            case GameState.RollAgain:
+                RollAgain();
+                break;
+
+        }
+    }
+
+    private void WaitingForAnimation()
+    {
+        
+    }
+
+    private void WaitingForClick()
+    {
+        SetInfoText("Player " + CurrentPlayerName + " click piece to move");
+    }
+
+    private void WaitingForRoll()
+    {
+        DiceRoller.instance.SetDiceText("?");
+        SetInfoText("Player " + CurrentPlayerName + " to roll");
+    }
+
+    void RollAgain()
+    {
+        UpdateGameState(GameState.WaitingForRoll);
     }
 
     void NewTurn()
     {
-        IsDoneRolling   = false;
-        IsDoneClicking  = false;
-        IsDoneAnimating = false;
-
         // advance player
         CurrentPlayerId = (CurrentPlayerId + 1) % TotalPlayers;
         CurrentPlayerName = PlayerNames[CurrentPlayerId];
 
-        DiceRoller.instance.SetDiceText("?");
-        SetInfoText("Player " + CurrentPlayerName + " to roll");
+        UpdateGameState(GameState.WaitingForRoll);
     }
 
     public void SetInfoText(string newText)
     {
         infoText.text = newText;
     }
+}
+
+public enum GameState
+{
+    WaitingForRoll,
+    WaitingForClick,
+    WaitingForAnimation,
+    NewTurn,
+    RollAgain
 }
