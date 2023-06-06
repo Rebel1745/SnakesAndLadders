@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class GameManager : MonoBehaviour
         CurrentPlayerName = PlayerNames[CurrentPlayerId];
     }
 
+    void Start()
+    {
+        UpdateGameState(GameState.WaitingForRoll);
+    }
+
     public void UpdateGameState(GameState newState)
     {
         State = newState;
@@ -36,7 +42,9 @@ public class GameManager : MonoBehaviour
                 WaitingForClick();
                 break;
             case GameState.WaitingForAnimation:
-                WaitingForAnimation();
+                // nothing to do as yet
+                break;
+            case GameState.CheckForSnakesAndLadders:
                 break;
             case GameState.NewTurn:
                 NewTurn();
@@ -46,11 +54,6 @@ public class GameManager : MonoBehaviour
                 break;
 
         }
-    }
-
-    private void WaitingForAnimation()
-    {
-        
     }
 
     private void WaitingForClick()
@@ -86,9 +89,15 @@ public class GameManager : MonoBehaviour
 
 public enum GameState
 {
+    SelectNumberOfPlayers,
+    SelectPlayerDetails,
+    BuildGameBoard,
+    CreatePlayers,
     WaitingForRoll,
     WaitingForClick,
     WaitingForAnimation,
+    CheckForSnakesAndLadders,
     NewTurn,
-    RollAgain
+    RollAgain,
+    GameOverScreen
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,16 +10,17 @@ public class PlayerPiece : MonoBehaviour
     Tile currentTile;
 
     bool isAnimating = false;
+    bool isAnimatingSnakeOrLadder = false;
 
     // movement variables
     Tile[] moveQueue;
     int moveQueueIndex;
     Vector3 targetPosition;
     Vector3 velocity = Vector3.zero;
-    readonly float smoothTime = 0.25f;
+    float smoothTime = 0.25f;
     [SerializeField] int smoothTimeMultiplier = 1;
-    readonly float smoothDistance = 0.01f;
-    readonly float maxHeight = 0.5f;
+    float smoothDistance = 0.01f;
+    float maxHeight = 0.5f;
     [SerializeField] int maxHeightMultiplier = 1;
     [SerializeField] AnimationCurve heightCurve;
     Vector3 targetPositionWithHeight;
@@ -33,6 +35,40 @@ public class PlayerPiece : MonoBehaviour
     void Update()
     {
         MovePiece();
+
+        if (GameManager.instance.State == GameState.CheckForSnakesAndLadders)
+            CheckForSnakesAndLadders();
+    }
+
+    // TODO: Make this public and call it from the GameManager when player pieces are programatically generated
+    // TODO: Add different speed variables for going up ladders and down snakes (currently just uses smoothTime)
+    void CheckForSnakesAndLadders()
+    {
+        // If there are no snakes or ladders on this tile, move on
+        if(currentTile.SnakeDestinationTile == null && currentTile.LadderDestinationTile == null)
+        {
+            MoveToNextTurn();
+        }
+        else
+        {
+            isAnimating = true;
+            isAnimatingSnakeOrLadder = true;
+            targetPosition = currentTile.SnakeDestinationTile == null ? currentTile.LadderDestinationTile.transform.position : currentTile.SnakeDestinationTile.transform.position;
+            moveQueue = new Tile[1];
+            moveQueueIndex = 1;
+            currentTile = currentTile.SnakeDestinationTile ?? currentTile.LadderDestinationTile;
+            SetNewTargetPosition(targetPosition);
+            GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
+        }
+    }
+
+    void MoveToNextTurn()
+    {
+        //allow another roll if a 6 was rolled, otherwise move on to next turn
+        if (moveQueue.Length == 6)
+            GameManager.instance.UpdateGameState(GameState.RollAgain);
+        else
+            GameManager.instance.UpdateGameState(GameState.NewTurn);
     }
 
     void MovePiece()
@@ -50,11 +86,14 @@ public class PlayerPiece : MonoBehaviour
 
         targetHeight = heightCurve.Evaluate(heightTime / smoothTime) * maxHeight * maxHeightMultiplier;
 
-        targetPositionWithHeight = new Vector3(targetPosition.x, targetPosition.y + targetHeight , targetPosition.z);
+        // only add height to the movement if we aren't moving on snakes and ladders
+        if (!isAnimatingSnakeOrLadder)
+            targetPositionWithHeight = new Vector3(targetPosition.x, targetPosition.y + targetHeight, targetPosition.z);
+        else
+            targetPositionWithHeight = targetPosition;
 
         this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPositionWithHeight, ref velocity, (smoothTime / (float)smoothTimeMultiplier));
         
-
         heightTime += Time.deltaTime;
     }
 
@@ -67,13 +106,9 @@ public class PlayerPiece : MonoBehaviour
         }
         else
         {
-            //finished all animations, allow another roll if a 6 was rolled, otherwise move on to next turn
+            //finished all animations, check for snakes and ladders
             isAnimating = false;
-            if (moveQueue.Length == 6)
-                GameManager.instance.UpdateGameState(GameState.RollAgain);
-            else
-                GameManager.instance.UpdateGameState(GameState.NewTurn);
-            
+            GameManager.instance.UpdateGameState(GameState.CheckForSnakesAndLadders);            
         }
     }
 
@@ -121,6 +156,7 @@ public class PlayerPiece : MonoBehaviour
         moveQueueIndex = 0;
         currentTile = finalTile;
         isAnimating = true;
+        isAnimatingSnakeOrLadder = false;
 
         // we have clicked on a valid piece, set it moving
         GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
