@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class DiceRoller : MonoBehaviour
+public class DiceManager : MonoBehaviour
 {
-    public static DiceRoller instance;
+    public static DiceManager instance;
 
     [SerializeField] TMP_Text diceCountText;
 

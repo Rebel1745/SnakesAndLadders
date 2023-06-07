@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
 
     public GameState State;
 
+    // board
+    [SerializeField] int boardWidth;
+    [SerializeField] int boardHeight;
+
     // Players
     readonly string[] PlayerNames = { "One", "Two", "Three", "Four" };
     public int TotalPlayers = 2;
@@ -26,7 +30,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        UpdateGameState(GameState.WaitingForRoll);
+        UpdateGameState(GameState.BuildGameBoard);
+        //UpdateGameState(GameState.WaitingForRoll);
     }
 
     public void UpdateGameState(GameState newState)
@@ -35,6 +40,9 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.BuildGameBoard:
+                CreateGameBoard();
+                break;
             case GameState.WaitingForRoll:
                 WaitingForRoll();
                 break;
@@ -56,6 +64,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void CreateGameBoard()
+    {
+        BoardManager.instance.CreateBoard(boardWidth, boardHeight);
+    }
+
     private void WaitingForClick()
     {
         SetInfoText("Player " + CurrentPlayerName + " click piece to move");
@@ -63,7 +76,7 @@ public class GameManager : MonoBehaviour
 
     private void WaitingForRoll()
     {
-        DiceRoller.instance.SetDiceText("?");
+        DiceManager.instance.SetDiceText("?");
         SetInfoText("Player " + CurrentPlayerName + " to roll");
     }
 
