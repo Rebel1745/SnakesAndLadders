@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public Tile NextTile;
+    public int TileId;
+    public int TileNumber;
     public PlayerPiece PlayerPiece;
     public Tile SnakeDestinationTile;
     public Tile LadderDestinationTile;

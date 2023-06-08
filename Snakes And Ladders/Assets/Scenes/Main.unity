@@ -4457,6 +4457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardParent: {fileID: 500964137}
   tilePrefab: {fileID: 5414019007543695923, guid: 91762c035645bab4d84d4b40a80494f5, type: 3}
+  boardTiles: []
 --- !u!1001 &1145455561
 PrefabInstance:
   m_ObjectHideFlags: 0

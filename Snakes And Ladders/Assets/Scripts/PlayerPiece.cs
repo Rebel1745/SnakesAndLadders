@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlayerPiece : MonoBehaviour
 {
-    [SerializeField] Tile startingTile;
     [SerializeField] int playerId;
     Tile currentTile;
 
@@ -36,11 +35,29 @@ public class PlayerPiece : MonoBehaviour
     {
         MovePiece();
 
+        if (GameManager.instance.State == GameState.CheckForVictory)
+            CheckForVictory();
+
         if (GameManager.instance.State == GameState.CheckForSnakesAndLadders)
             CheckForSnakesAndLadders();
     }
 
-    // TODO: Make this public and call it from the GameManager when player pieces are programatically generated
+    void CheckForVictory()
+    {
+        // if the player has landed on the last square, they are victorious
+        if(currentTile.TileNumber == BoardManager.instance.GetLastTile().TileNumber)
+        {
+            // the game is over!
+            GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " has won!");
+            GameManager.instance.UpdateGameState(GameState.GameOverScreen);
+        }
+        else
+        {
+            // if not, check if the player is on a snake or a ladder
+            GameManager.instance.UpdateGameState(GameState.CheckForSnakesAndLadders);
+        }
+    }
+
     // TODO: Add different speed variables for going up ladders and down snakes (currently just uses smoothTime)
     void CheckForSnakesAndLadders()
     {
@@ -71,13 +88,12 @@ public class PlayerPiece : MonoBehaviour
             GameManager.instance.UpdateGameState(GameState.NewTurn);
     }
 
+    // TODO: Make this public and call it from the GameManager when player pieces are programatically generated
     void MovePiece()
     {
         // have we finished animating?
         if (!isAnimating)
             return;
-
-        GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " moving " + (moveQueue.Length - moveQueueIndex) + " more squares");
 
         if(Vector3.Distance(this.transform.position, targetPosition) < smoothDistance)
         {
@@ -106,14 +122,22 @@ public class PlayerPiece : MonoBehaviour
         }
         else
         {
-            //finished all animations, check for snakes and ladders
+            //finished all animations, check for victory state
             isAnimating = false;
-            GameManager.instance.UpdateGameState(GameState.CheckForSnakesAndLadders);            
+            GameManager.instance.UpdateGameState(GameState.CheckForVictory);            
         }
     }
 
     void SetNewTargetPosition(Vector3 pos)
     {
+        // update the info text to count to the dice total
+        if (moveQueueIndex == 0)
+            GameManager.instance.SetInfoText("1");
+        else
+        {
+            GameManager.instance.SetInfoText(GameManager.instance.GetInfoText() + " ... " + (moveQueueIndex + 1).ToString());
+        }
+
         targetPosition = pos;
         velocity = Vector3.zero;
         heightTime = 0f;
@@ -131,30 +155,54 @@ public class PlayerPiece : MonoBehaviour
 
         // move this piece
         int spacesToMove = GameManager.instance.DiceTotal;
-        GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " moving " + spacesToMove + " more squares");
         
         moveQueue = new Tile[spacesToMove];
 
-        Tile finalTile = currentTile;
+        //Tile finalTile = currentTile;
+        Tile lastTile = BoardManager.instance.GetLastTile();
 
-        for (int i = 0; i < spacesToMove; i++)
+        // check to see if the destination tile is legal
+        if (currentTile != null && currentTile.TileNumber + spacesToMove > lastTile.TileNumber)
         {
-            if(finalTile == null)
+            // we would overshoot the board if we ran the normal moveQueue code so calculate up to the final square
+            // first get the tiles up to and including the final tile
+            int tilesUntilFinalTile = lastTile.TileNumber - currentTile.TileNumber;
+
+            for(int i = 0; i < tilesUntilFinalTile; i++)
             {
-                finalTile = startingTile;
-            }
-            else
-            {
-                finalTile = finalTile.NextTile;
+                moveQueue[i] = BoardManager.instance.GetTile(currentTile.TileId + i + 1);
             }
 
-            moveQueue[i] = finalTile;
+            // then in reverse order, get the remaining tiles starting at one before the last tile
+            int remainingTiles = spacesToMove - tilesUntilFinalTile;
+
+            for (int i = 0; i < remainingTiles; i++)
+            {
+                moveQueue[tilesUntilFinalTile + i] = BoardManager.instance.GetTile(lastTile.TileId - i - 1);
+            }
+
+            currentTile = moveQueue[spacesToMove - 1];
         }
+        else
+        {
+            for (int i = 0; i < spacesToMove; i++)
+            {
+                // if there isn't a currentTile then we are not yet on the board, so start on the first square
+                if (currentTile == null)
+                {
+                    moveQueue[i] = BoardManager.instance.GetTile(0);
+                }
+                else
+                {
+                    moveQueue[i] = BoardManager.instance.GetTile(currentTile.TileId + 1);
+                }
 
-        // TODO: check to see if the destination tile is legal
+                currentTile = moveQueue[i];
+            }
+        }
+        
 
         moveQueueIndex = 0;
-        currentTile = finalTile;
         isAnimating = true;
         isAnimatingSnakeOrLadder = false;
 

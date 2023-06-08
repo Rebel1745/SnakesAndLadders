@@ -98,6 +98,11 @@ public class GameManager : MonoBehaviour
     {
         infoText.text = newText;
     }
+
+    public string GetInfoText()
+    {
+        return infoText.text;
+    }
 }
 
 public enum GameState
@@ -109,6 +114,7 @@ public enum GameState
     WaitingForRoll,
     WaitingForClick,
     WaitingForAnimation,
+    CheckForVictory,
     CheckForSnakesAndLadders,
     NewTurn,
     RollAgain,
