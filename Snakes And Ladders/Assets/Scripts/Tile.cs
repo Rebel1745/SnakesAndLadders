@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Tile : MonoBehaviour
 {
@@ -10,5 +11,5 @@ public class Tile : MonoBehaviour
     public Tile SnakeDestinationTile;
     public Tile LadderDestinationTile;
     public Transform SnakeOrLadderHolder;
-    public Transform TileNumberText;
+    public TMP_Text tileNumberText;
 }

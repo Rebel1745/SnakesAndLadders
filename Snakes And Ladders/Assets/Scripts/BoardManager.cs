@@ -8,7 +8,6 @@ public class BoardManager : MonoBehaviour
     public static BoardManager instance;
     [SerializeField] Transform boardParent;
     [SerializeField] GameObject tilePrefab;
-    [SerializeField] GameObject tileNumberPrefab;
     [SerializeField] GameObject ladderPrefab;
     [SerializeField] GameObject snakePrefab;
 
@@ -53,7 +52,6 @@ public class BoardManager : MonoBehaviour
         }
 
         GameObject newTileGO;
-        GameObject newTileTextGO;
         Tile newTile;
         Vector3 startPos = Vector3.zero, tilePos;
         int tileNo = 1;
@@ -69,11 +67,9 @@ public class BoardManager : MonoBehaviour
                 newTile = newTileGO.GetComponent<Tile>();
                 newTile.TileId = tileNo - 1;
                 newTile.TileNumber = tileNo;
+                newTile.tileNumberText.text = tileNo.ToString();
 
                 boardTiles[tileNo - 1] = newTile;
-
-                //newTileTextGO = Instantiate(tileNumberPrefab, newTile.TileNumberText.position, Quaternion.identity, newTile.transform);
-                //newTileTextGO.GetComponent<TMP_Text>().text = tileNo.ToString();
 
                 tileNo++;
             }
@@ -86,11 +82,9 @@ public class BoardManager : MonoBehaviour
                 newTile = newTileGO.GetComponent<Tile>();
                 newTile.TileId = tileNo - 1;
                 newTile.TileNumber = tileNo;
+                newTile.tileNumberText.text = tileNo.ToString();
 
                 boardTiles[tileNo - 1] = newTile;
-
-                //newTileTextGO = Instantiate(tileNumberPrefab, newTile.TileNumberText.position, Quaternion.identity, newTile.transform);
-                //newTileTextGO.GetComponent<TMP_Text>().text = tileNo.ToString();
 
                 tileNo++;
             }
