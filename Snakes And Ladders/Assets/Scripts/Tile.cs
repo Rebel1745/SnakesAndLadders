@@ -9,4 +9,6 @@ public class Tile : MonoBehaviour
     public PlayerPiece PlayerPiece;
     public Tile SnakeDestinationTile;
     public Tile LadderDestinationTile;
+    public Transform SnakeOrLadderHolder;
+    public Transform TileNumberText;
 }

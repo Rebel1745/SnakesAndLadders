@@ -4295,6 +4295,82 @@ PrefabInstance:
       propertyPath: startingTile
       value: 
       objectReference: {fileID: 7951538576903384168}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: maxHeightMultiplier
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: smoothTimeMultiplier
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].time
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[2].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[0].inSlope
+      value: 3.3333333
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].inSlope
+      value: -0.0106797125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[2].inSlope
+      value: -1.4285715
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[0].outSlope
+      value: 3.3333333
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].inWeight
+      value: 0.7361111
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].outSlope
+      value: -0.0106797125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[2].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[2].outSlope
+      value: -1.4285715
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[0].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[1].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669627739753420222, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
+      propertyPath: heightCurve.m_Curve.Array.data[2].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
     - target: {fileID: 3768558219183189298, guid: 4576b3ea821af344b86f1592ec4b2138, type: 3}
       propertyPath: m_Name
       value: Player2-Piece
@@ -4457,6 +4533,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardParent: {fileID: 500964137}
   tilePrefab: {fileID: 5414019007543695923, guid: 91762c035645bab4d84d4b40a80494f5, type: 3}
+  tileNumberPrefab: {fileID: 3170692847117051266, guid: 7ece62c4e509a5e4da3e4eb25967f3f6, type: 3}
+  ladderPrefab: {fileID: 6535892709710355849, guid: 7a8c6e32a27fc004891ab110ccabc730, type: 3}
+  snakePrefab: {fileID: 5381486408986983804, guid: 6d7055565d243c64f8b4c044090b8abe, type: 3}
   boardTiles: []
 --- !u!1001 &1145455561
 PrefabInstance:
