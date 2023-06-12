@@ -25,13 +25,12 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        CurrentPlayerName = PlayerNames[CurrentPlayerId];
+        //CurrentPlayerName = PlayerNames[CurrentPlayerId];
     }
 
     void Start()
     {
-        UpdateGameState(GameState.BuildGameBoard);
-        //UpdateGameState(GameState.WaitingForRoll);
+        UpdateGameState(GameState.SelectPlayerDetails);
     }
 
     public void UpdateGameState(GameState newState)
@@ -40,8 +39,14 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.SelectPlayerDetails:
+                SelectPlayerDetails();
+                break;
             case GameState.BuildGameBoard:
                 CreateGameBoard();
+                break;
+            case GameState.SetupGame:
+                SetupGame();
                 break;
             case GameState.WaitingForRoll:
                 WaitingForRoll();
@@ -62,6 +67,19 @@ public class GameManager : MonoBehaviour
                 break;
 
         }
+    }
+
+    void SetupGame()
+    {
+        // TODO: get the info from the players array to place the players and reactivate them
+        // Setup the variables that control player names and ids
+        // Start the game by changing the state to WaitingForRoll
+        // Activate the GameUI
+    }
+
+    void SelectPlayerDetails()
+    {
+        PlayerManager.instance.ShowPlayerSelectScreen();
     }
 
     void CreateGameBoard()
@@ -107,10 +125,9 @@ public class GameManager : MonoBehaviour
 
 public enum GameState
 {
-    SelectNumberOfPlayers,
     SelectPlayerDetails,
     BuildGameBoard,
-    CreatePlayers,
+    SetupGame,
     WaitingForRoll,
     WaitingForClick,
     WaitingForAnimation,

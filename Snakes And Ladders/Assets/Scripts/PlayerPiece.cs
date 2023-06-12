@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class PlayerPiece : MonoBehaviour
 {
-    [SerializeField] int playerId;
     Tile currentTile;
 
     bool isAnimating = false;
     bool isAnimatingSnakeOrLadder = false;
+
+    // Player info
+    int playerId;
+    string playerName;
+    bool isCPU;
 
     // movement variables
     Tile[] moveQueue;
@@ -40,6 +44,16 @@ public class PlayerPiece : MonoBehaviour
 
         if (GameManager.instance.State == GameState.CheckForSnakesAndLadders)
             CheckForSnakesAndLadders();
+    }
+
+    public void SetupPlayerPiece(int id, string name, bool cpu, int colourIndex)
+    {
+        playerId = id;
+        this.transform.name = "Player-" + name;
+        playerName = name;
+        isCPU = cpu;
+
+        // TODO: change material depending on colour index
     }
 
     void CheckForVictory()
