@@ -15,6 +15,15 @@ public class DiceManager : MonoBehaviour
         SetDiceText("?");
     }
 
+    private void Update()
+    {
+        if (GameManager.instance.State != GameState.WaitingForRoll)
+            return;
+
+        if (GameManager.instance.IsCurrentPlayerCPU)
+            RollTheDice();
+    }
+
     public void RollTheDice()
     {
         // Have we already rolled the dice?

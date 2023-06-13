@@ -9,12 +9,14 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField] GameObject playerPrefab;
     [SerializeField] Transform playerHolder;
+    [SerializeField] Transform[] playerStartPositions;
 
     [SerializeField] GameObject playerSelectUI;
     [SerializeField] int maximumPlayers = 8;
     [SerializeField] TMP_Text numberOfPlayersText;
     int numberOfPlayers = 2;
     [SerializeField] Transform playerDetailsHolder;
+    [SerializeField] GameObject[] allPlayerDetails;
     public Material[] PlayerColours;
 
     public GameObject[] Players;
@@ -22,6 +24,21 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+        UpdateNumberOfPlayerDetails();
+    }
+
+    void UpdateNumberOfPlayerDetails()
+    {
+        bool activated = false;
+        for (int i = 0; i < allPlayerDetails.Length; i++)
+        {
+            activated = i <= numberOfPlayers - 1 ? true : false;
+            allPlayerDetails[i].SetActive(activated);
+        }
     }
 
     public void ShowPlayerSelectScreen()
@@ -45,6 +62,7 @@ public class PlayerManager : MonoBehaviour
             numberOfPlayers = 1;
 
         ChangeNumberOfPlayersText();
+        UpdateNumberOfPlayerDetails();
     }
 
     void ChangeNumberOfPlayersText()
@@ -62,10 +80,11 @@ public class PlayerManager : MonoBehaviour
         for (int i = 0; i < numberOfPlayers; i++)
         {
             currentPlayerDetails = playerDetailsHolder.GetChild(i).GetComponent<PlayerDetails>();
-            Players[i] = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity, playerHolder);
+            Players[i] = Instantiate(playerPrefab, playerStartPositions[i].position, Quaternion.identity, playerHolder);
             currentPlayerPiece = Players[i].GetComponent<PlayerPiece>();
-            currentPlayerPiece.SetupPlayerPiece(i, currentPlayerDetails.PlayerName, currentPlayerDetails.isCPU, currentPlayerDetails.currentColourIndex);
+            currentPlayerPiece.SetupPlayerPiece(i, currentPlayerDetails.PlayerName, currentPlayerDetails.isCPU, currentPlayerDetails.currentColourIndex, playerStartPositions[i].position);
 
+            // deactivate until the game is ready to start
             Players[i].SetActive(false);
         }
 

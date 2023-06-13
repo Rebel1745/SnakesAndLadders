@@ -143,8 +143,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42305cc7b13896744bf339512f249c2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerId: 0
+  PlayerName: 
+  IsCPU: 0
   smoothTimeMultiplier: 2
-  maxHeightMultiplier: 3
+  maxHeightMultiplier: 0
   heightCurve:
     serializedVersion: 2
     m_Curve:

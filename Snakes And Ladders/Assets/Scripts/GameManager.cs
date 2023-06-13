@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     [SerializeField] TMP_Text infoText;
+    [SerializeField] GameObject gameUI;
 
     public GameState State;
 
@@ -14,10 +15,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] int boardHeight;
 
     // Players
-    readonly string[] PlayerNames = { "One", "Two", "Three", "Four" };
-    public int TotalPlayers = 2;
+    int totalPlayers;
+    PlayerPiece currentPlayerPiece;
     public int CurrentPlayerId;
-    public string CurrentPlayerName;
+    string currentPlayerName;
+    public bool IsCurrentPlayerCPU = false;
 
     // Dice
     public int DiceTotal;
@@ -25,7 +27,6 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        //CurrentPlayerName = PlayerNames[CurrentPlayerId];
     }
 
     void Start()
@@ -65,16 +66,40 @@ public class GameManager : MonoBehaviour
             case GameState.RollAgain:
                 RollAgain();
                 break;
+            case GameState.GameOverScreen:
+                GameOver();
+                break;
 
         }
+    }
+
+    void GameOver()
+    {
+        SetInfoText(currentPlayerName + " has won!");
     }
 
     void SetupGame()
     {
         // TODO: get the info from the players array to place the players and reactivate them
+        foreach(GameObject g in PlayerManager.instance.Players)
+        {
+            g.SetActive(true);
+        }
         // Setup the variables that control player names and ids
-        // Start the game by changing the state to WaitingForRoll
+        totalPlayers = PlayerManager.instance.Players.Length;
+        CurrentPlayerId = 0;
+        UpdateCurrentPlayerDetails();
         // Activate the GameUI
+        gameUI.SetActive(true);
+        // Start the game by changing the state to WaitingForRoll
+        UpdateGameState(GameState.WaitingForRoll);
+    }
+
+    void UpdateCurrentPlayerDetails()
+    {
+        currentPlayerPiece = PlayerManager.instance.Players[CurrentPlayerId].GetComponent<PlayerPiece>();
+        currentPlayerName = currentPlayerPiece.PlayerName;
+        IsCurrentPlayerCPU = currentPlayerPiece.IsCPU;
     }
 
     void SelectPlayerDetails()
@@ -89,13 +114,13 @@ public class GameManager : MonoBehaviour
 
     private void WaitingForClick()
     {
-        SetInfoText("Player " + CurrentPlayerName + " click piece to move");
+        SetInfoText(currentPlayerName + " click piece to move");
     }
 
     private void WaitingForRoll()
     {
         DiceManager.instance.SetDiceText("?");
-        SetInfoText("Player " + CurrentPlayerName + " to roll");
+        SetInfoText(currentPlayerName + " to roll");
     }
 
     void RollAgain()
@@ -106,8 +131,8 @@ public class GameManager : MonoBehaviour
     void NewTurn()
     {
         // advance player
-        CurrentPlayerId = (CurrentPlayerId + 1) % TotalPlayers;
-        CurrentPlayerName = PlayerNames[CurrentPlayerId];
+        CurrentPlayerId = (CurrentPlayerId + 1) % totalPlayers;
+        UpdateCurrentPlayerDetails();
 
         UpdateGameState(GameState.WaitingForRoll);
     }

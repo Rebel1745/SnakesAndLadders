@@ -11,9 +11,10 @@ public class PlayerPiece : MonoBehaviour
     bool isAnimatingSnakeOrLadder = false;
 
     // Player info
-    int playerId;
-    string playerName;
-    bool isCPU;
+    public int PlayerId;
+    public string PlayerName;
+    public bool IsCPU;
+    Vector3 startingPosition;
 
     // movement variables
     Tile[] moveQueue;
@@ -37,6 +38,8 @@ public class PlayerPiece : MonoBehaviour
     
     void Update()
     {
+        CheckForCPUClick();
+
         MovePiece();
 
         if (GameManager.instance.State == GameState.CheckForVictory)
@@ -46,14 +49,14 @@ public class PlayerPiece : MonoBehaviour
             CheckForSnakesAndLadders();
     }
 
-    public void SetupPlayerPiece(int id, string name, bool cpu, int colourIndex)
+    public void SetupPlayerPiece(int id, string name, bool cpu, int colourIndex, Vector3 startPos)
     {
-        playerId = id;
+        PlayerId = id;
         this.transform.name = "Player-" + name;
-        playerName = name;
-        isCPU = cpu;
-
-        // TODO: change material depending on colour index
+        PlayerName = name;
+        IsCPU = cpu;
+        this.GetComponentInChildren<Renderer>().material = PlayerManager.instance.PlayerColours[colourIndex];
+        startingPosition = startPos;
     }
 
     void CheckForVictory()
@@ -62,7 +65,6 @@ public class PlayerPiece : MonoBehaviour
         if(currentTile.TileNumber == BoardManager.instance.GetLastTile().TileNumber)
         {
             // the game is over!
-            GameManager.instance.SetInfoText("Player " + GameManager.instance.CurrentPlayerName + " has won!");
             GameManager.instance.UpdateGameState(GameState.GameOverScreen);
         }
         else
@@ -80,6 +82,18 @@ public class PlayerPiece : MonoBehaviour
         {
             MoveToNextTurn();
         }
+        /*else if(currentTile.PlayerPiece != null)
+        {
+            // TODO This doesn't work as the current tile is updated before this check
+            // there is someone already on this tile, send them to their start position
+            isAnimating = true;
+            isAnimatingSnakeOrLadder = true;
+            moveQueue = new Tile[1];
+            moveQueueIndex = 1;
+            currentTile = null;
+            SetNewTargetPosition(startingPosition);
+            GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
+        }*/
         else
         {
             isAnimating = true;
@@ -138,6 +152,7 @@ public class PlayerPiece : MonoBehaviour
         {
             //finished all animations, check for victory state
             isAnimating = false;
+            //currentTile.PlayerPiece = this;
             GameManager.instance.UpdateGameState(GameState.CheckForVictory);            
         }
     }
@@ -157,6 +172,14 @@ public class PlayerPiece : MonoBehaviour
         heightTime = 0f;
     }
 
+    void CheckForCPUClick()
+    {
+        if (GameManager.instance.State == GameState.WaitingForClick && PlayerId == GameManager.instance.CurrentPlayerId && GameManager.instance.IsCurrentPlayerCPU)
+        {
+            SelectPiece();
+        }
+    }
+
     private void OnMouseUp()
     {
         // are we waiting for a click?
@@ -164,15 +187,23 @@ public class PlayerPiece : MonoBehaviour
             return;
 
         // Check if this piece belongs to us, if not then we can't click on it
-        if (playerId != GameManager.instance.CurrentPlayerId)
+        if (PlayerId != GameManager.instance.CurrentPlayerId)
             return;
 
+        SelectPiece();
+    }
+
+    void SelectPiece()
+    {
         // move this piece
         int spacesToMove = GameManager.instance.DiceTotal;
-        
+
         moveQueue = new Tile[spacesToMove];
 
-        //Tile finalTile = currentTile;
+        // if we are on a tile then remove this piece from it
+        if(currentTile != null)
+            currentTile.PlayerPiece = null;
+
         Tile lastTile = BoardManager.instance.GetLastTile();
 
         // check to see if the destination tile is legal
@@ -182,7 +213,7 @@ public class PlayerPiece : MonoBehaviour
             // first get the tiles up to and including the final tile
             int tilesUntilFinalTile = lastTile.TileNumber - currentTile.TileNumber;
 
-            for(int i = 0; i < tilesUntilFinalTile; i++)
+            for (int i = 0; i < tilesUntilFinalTile; i++)
             {
                 moveQueue[i] = BoardManager.instance.GetTile(currentTile.TileId + i + 1);
             }
@@ -214,7 +245,7 @@ public class PlayerPiece : MonoBehaviour
                 currentTile = moveQueue[i];
             }
         }
-        
+
 
         moveQueueIndex = 0;
         isAnimating = true;

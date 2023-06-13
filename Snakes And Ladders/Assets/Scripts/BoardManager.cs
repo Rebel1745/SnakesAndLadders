@@ -6,7 +6,7 @@ using TMPro;
 public class BoardManager : MonoBehaviour
 {
     public static BoardManager instance;
-    [SerializeField] Transform boardParent;
+    [SerializeField] Transform tileParent;
     [SerializeField] GameObject tilePrefab;
     [SerializeField] GameObject ladderPrefab;
     [SerializeField] GameObject snakePrefab;
@@ -46,9 +46,9 @@ public class BoardManager : MonoBehaviour
         boardTiles = new Tile[width * height];
 
         // destroy the placeholder tiles that are there
-        for(int i = 0; i < boardParent.childCount; i++)
+        for(int i = 0; i < tileParent.childCount; i++)
         {
-            Destroy(boardParent.GetChild(i).gameObject);
+            Destroy(tileParent.GetChild(i).gameObject);
         }
 
         GameObject newTileGO;
@@ -62,7 +62,7 @@ public class BoardManager : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 tilePos = new Vector3((startPos.x + x), startPos.y, startPos.z + z);
-                newTileGO = Instantiate(tilePrefab, tilePos, Quaternion.identity, boardParent);
+                newTileGO = Instantiate(tilePrefab, tilePos, Quaternion.identity, tileParent);
                 newTileGO.name = "Tile " + tileNo;
                 newTile = newTileGO.GetComponent<Tile>();
                 newTile.TileId = tileNo - 1;
@@ -77,7 +77,7 @@ public class BoardManager : MonoBehaviour
             for (int x = width; x > 0; x--)
             {
                 tilePos = new Vector3((startPos.x + x - 1), startPos.y, (startPos.z + z + 1));
-                newTileGO = Instantiate(tilePrefab, tilePos, Quaternion.identity, boardParent);
+                newTileGO = Instantiate(tilePrefab, tilePos, Quaternion.identity, tileParent);
                 newTileGO.name = "Tile " + tileNo;
                 newTile = newTileGO.GetComponent<Tile>();
                 newTile.TileId = tileNo - 1;
@@ -93,7 +93,7 @@ public class BoardManager : MonoBehaviour
         DrawSnakesAndLadders();
 
         // finished building, move on to next step
-        GameManager.instance.UpdateGameState(GameState.WaitingForRoll);
+        GameManager.instance.UpdateGameState(GameState.SetupGame);
     }
 
     void DrawSnakesAndLadders()
