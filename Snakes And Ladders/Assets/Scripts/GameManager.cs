@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
 
     private void WaitingForRoll()
     {
-        DiceManager.instance.SetDiceText("?");
+        DiceManager.instance.SetDice(0);
         SetInfoText(currentPlayerName + " to roll");
     }
 

@@ -525,6 +525,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   diceCountText: {fileID: 1345576696}
+  diceImages:
+  - {fileID: 21300000, guid: 89652dfcdc6e6d84dbb373848b518131, type: 3}
+  - {fileID: 21300000, guid: 22015ab52d9a49c4d97b81dbda196a1c, type: 3}
+  - {fileID: 21300000, guid: 14f78b49a9dfc6649bfa6e5e7d8fb4d0, type: 3}
+  - {fileID: 21300000, guid: f62eacfb2cfdd1a438e2455b08694357, type: 3}
+  - {fileID: 21300000, guid: 03994adfd0d439b43ac641841f4a3e66, type: 3}
+  - {fileID: 21300000, guid: 21c71c22de3648c4483028bb59425a74, type: 3}
+  - {fileID: 21300000, guid: 6356341a798a6f046981a775b27dbe11, type: 3}
+  diceImage: {fileID: 1600348252}
+  IsUsingDiceImage: 1
+  TimeForDiceToRoll: 1
 --- !u!1 &27043315
 GameObject:
   m_ObjectHideFlags: 0
@@ -1849,7 +1860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNameInputField: {fileID: 1935013312}
-  defaultPlayerName: Player OThree
+  defaultPlayerName: Player Three
   PlayerName: 
   isCPU: 0
   currentColourIndex: 2
