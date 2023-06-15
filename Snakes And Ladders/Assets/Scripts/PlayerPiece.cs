@@ -82,41 +82,46 @@ public class PlayerPiece : MonoBehaviour
         {
             MoveToNextTurn();
         }
-        /*else if(currentTile.PlayerPiece != null)
-        {
-            // TODO This doesn't work as the current tile is updated before this check
-            // there is someone already on this tile, send them to their start position
-            isAnimating = true;
-            isAnimatingSnakeOrLadder = true;
-            moveQueue = new Tile[1];
-            moveQueueIndex = 1;
-            currentTile = null;
-            SetNewTargetPosition(startingPosition);
-            GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
-        }*/
         else
         {
-            isAnimating = true;
-            isAnimatingSnakeOrLadder = true;
-            targetPosition = currentTile.SnakeDestinationTile == null ? currentTile.LadderDestinationTile.transform.position : currentTile.SnakeDestinationTile.transform.position;
-            moveQueue = new Tile[1];
-            moveQueueIndex = 1;
-            currentTile = currentTile.SnakeDestinationTile ?? currentTile.LadderDestinationTile;
-            SetNewTargetPosition(targetPosition);
-            GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
+            Tile targetTile = currentTile.SnakeDestinationTile ?? currentTile.LadderDestinationTile;
+            AnimateToSpecialTile(targetTile);
         }
+    }
+
+    // this is used to setup animations for snakes and ladders, and being sent either back home or to the start square
+    public void AnimateToSpecialTile(Tile newTile)
+    {
+        isAnimating = true;
+        isAnimatingSnakeOrLadder = true;
+        targetPosition = newTile.transform.position;
+        moveQueue = new Tile[moveQueue.Length];
+        moveQueueIndex = moveQueue.Length;
+        currentTile = newTile;
+        SetNewTargetPosition(targetPosition);
+        GameManager.instance.UpdateGameState(GameState.WaitingForAnimation);
     }
 
     void MoveToNextTurn()
     {
         //allow another roll if a 6 was rolled, otherwise move on to next turn
         if (moveQueue.Length == 6)
-            GameManager.instance.UpdateGameState(GameState.RollAgain);
+        {
+            GameManager.instance.CurrentPlayerRollAgainCount++;
+
+            if(GameManager.instance.CurrentPlayerRollAgainCount < GameManager.instance.MaximumRollAgain)
+            {
+                GameManager.instance.UpdateGameState(GameState.RollAgain);
+            }
+            else
+            {
+                GameManager.instance.UpdateGameState(GameState.NewTurn);
+            }
+        }            
         else
             GameManager.instance.UpdateGameState(GameState.NewTurn);
     }
-
-    // TODO: Make this public and call it from the GameManager when player pieces are programatically generated
+    
     void MovePiece()
     {
         // have we finished animating?
@@ -178,6 +183,15 @@ public class PlayerPiece : MonoBehaviour
         {
             SelectPiece();
         }
+
+        // also auto move the piece if the maximum number of 6's has been reached
+        if(GameManager.instance.State == GameState.WaitingForClick 
+            && PlayerId == GameManager.instance.CurrentPlayerId 
+            && GameManager.instance.DiceTotal == 6 
+            && GameManager.instance.CurrentPlayerRollAgainCount == GameManager.instance.MaximumRollAgain - 1)
+        {
+            SelectPiece();
+        }
     }
 
     private void OnMouseUp()
@@ -203,6 +217,14 @@ public class PlayerPiece : MonoBehaviour
         // if we are on a tile then remove this piece from it
         if(currentTile != null)
             currentTile.PlayerPiece = null;
+
+        if (spacesToMove == 6 && GameManager.instance.CurrentPlayerRollAgainCount == GameManager.instance.MaximumRollAgain - 1)
+        {
+            // we have now rolled the maximum number of consecutive 6's, send the player to the start
+            AnimateToSpecialTile(BoardManager.instance.GetTile(0));
+            GameManager.instance.SetInfoText("You have rolled too many 6's!  Back to the start!");
+            return;
+        }
 
         Tile lastTile = BoardManager.instance.GetLastTile();
 

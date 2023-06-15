@@ -11,10 +11,13 @@ public class DiceManager : MonoBehaviour
     [SerializeField] TMP_Text diceCountText;
     [SerializeField] Sprite[] diceImages;
     [SerializeField] Image diceImage;
+    [SerializeField] Button rollTheDiceButton;
 
     bool isRolling = false;
     public bool IsUsingDiceImage = false;
-    public float TimeForDiceToRoll = 1f;
+    [SerializeField] float timeForDiceToRoll = 1f;
+    [SerializeField] float timeBetweenDiceUpdates = 0.05f;
+    float currentTimeBetweenDiceUpdates;
 
     void Start()
     {
@@ -25,7 +28,18 @@ public class DiceManager : MonoBehaviour
     private void Update()
     {
         if (GameManager.instance.State != GameState.WaitingForRoll)
+        {
+            ShoHideButton(false);
             return;
+        }
+        else
+        {
+            // hide the button if the player is a cpu
+            if (!isRolling && !GameManager.instance.IsCurrentPlayerCPU)
+            {
+                ShoHideButton(true);
+            }
+        }
 
         if (GameManager.instance.IsCurrentPlayerCPU)
             RollTheDice();
@@ -34,8 +48,15 @@ public class DiceManager : MonoBehaviour
             UpdateDice();
     }
 
+    void ShoHideButton(bool show)
+    {
+        rollTheDiceButton.gameObject.SetActive(show);
+    }
+
     public void RollTheDice()
     {
+        ShoHideButton(false);
+
         // Have we already rolled the dice?
         if (GameManager.instance.State != GameState.WaitingForRoll || isRolling)
             return;
@@ -45,14 +66,21 @@ public class DiceManager : MonoBehaviour
 
     void UpdateDice()
     {
-        int rolledNum = Random.Range(1, 7);
-        SetDice(rolledNum);
+        currentTimeBetweenDiceUpdates += Time.deltaTime;
+
+        if(currentTimeBetweenDiceUpdates >= timeBetweenDiceUpdates)
+        {
+            SetDice(Random.Range(1, 7));
+            currentTimeBetweenDiceUpdates = 0;
+        }
+        
     }
 
     void StartRolling()
     {
+        currentTimeBetweenDiceUpdates = 0f;
         isRolling = true;
-        Invoke("StopRolling", TimeForDiceToRoll);
+        Invoke("StopRolling", timeForDiceToRoll);
     }
 
     void StopRolling()

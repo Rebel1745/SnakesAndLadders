@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     string currentPlayerName;
     public bool IsCurrentPlayerCPU = false;
 
+    public int CurrentPlayerRollAgainCount = 0;
+    public int MaximumRollAgain = 3;
+
     // Dice
     public int DiceTotal;
 
@@ -125,7 +128,10 @@ public class GameManager : MonoBehaviour
 
     void RollAgain()
     {
-        UpdateGameState(GameState.WaitingForRoll);
+        //CurrentPlayerRollAgainCount++;
+
+        if(CurrentPlayerRollAgainCount <= MaximumRollAgain)
+            UpdateGameState(GameState.WaitingForRoll);
     }
 
     void NewTurn()
@@ -133,6 +139,7 @@ public class GameManager : MonoBehaviour
         // advance player
         CurrentPlayerId = (CurrentPlayerId + 1) % totalPlayers;
         UpdateCurrentPlayerDetails();
+        CurrentPlayerRollAgainCount = 0;
 
         UpdateGameState(GameState.WaitingForRoll);
     }

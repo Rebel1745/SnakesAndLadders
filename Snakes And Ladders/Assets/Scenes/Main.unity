@@ -534,8 +534,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 21c71c22de3648c4483028bb59425a74, type: 3}
   - {fileID: 21300000, guid: 6356341a798a6f046981a775b27dbe11, type: 3}
   diceImage: {fileID: 1600348252}
+  rollTheDiceButton: {fileID: 80757436}
   IsUsingDiceImage: 1
-  TimeForDiceToRoll: 1
+  timeForDiceToRoll: 1
+  timeBetweenDiceUpdates: 0.05
 --- !u!1 &27043315
 GameObject:
   m_ObjectHideFlags: 0
@@ -11737,6 +11739,8 @@ MonoBehaviour:
   boardHeight: 10
   CurrentPlayerId: 0
   IsCurrentPlayerCPU: 0
+  CurrentPlayerRollAgainCount: 0
+  MaximumRollAgain: 3
   DiceTotal: 0
 --- !u!4 &745116616
 Transform:
