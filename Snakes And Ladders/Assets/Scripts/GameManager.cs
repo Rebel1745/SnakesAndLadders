@@ -130,8 +130,10 @@ public class GameManager : MonoBehaviour
     {
         //CurrentPlayerRollAgainCount++;
 
-        if(CurrentPlayerRollAgainCount <= MaximumRollAgain)
+        if (CurrentPlayerRollAgainCount <= MaximumRollAgain)
             UpdateGameState(GameState.WaitingForRoll);
+        else
+            print("If I see this message, something went wrong");
     }
 
     void NewTurn()

@@ -146,8 +146,8 @@ MonoBehaviour:
   PlayerId: 0
   PlayerName: 
   IsCPU: 0
-  smoothTimeMultiplier: 2
-  maxHeightMultiplier: 0
+  smoothTimeMultiplier: 10
+  maxHeightMultiplier: 3
   heightCurve:
     serializedVersion: 2
     m_Curve:

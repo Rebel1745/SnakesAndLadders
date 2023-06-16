@@ -9,6 +9,7 @@ public class PlayerPiece : MonoBehaviour
 
     bool isAnimating = false;
     bool isAnimatingSnakeOrLadder = false;
+    bool isCurrentPlayerAnimation = false;
 
     // Player info
     public int PlayerId;
@@ -80,20 +81,30 @@ public class PlayerPiece : MonoBehaviour
         // If there are no snakes or ladders on this tile, move on
         if(currentTile.SnakeDestinationTile == null && currentTile.LadderDestinationTile == null)
         {
+            // check if there is a piece on this tile
+            if (currentTile.TileId != 0 && currentTile.PlayerPiece)
+            {
+                currentTile.PlayerPiece.AnimateToSpecialTile(BoardManager.instance.GetTile(0), false);
+            }
+
+            // Set this player piece as being on this tile
+            currentTile.PlayerPiece = this;
+
             MoveToNextTurn();
         }
         else
         {
             Tile targetTile = currentTile.SnakeDestinationTile ?? currentTile.LadderDestinationTile;
-            AnimateToSpecialTile(targetTile);
+            AnimateToSpecialTile(targetTile, true);
         }
     }
 
     // this is used to setup animations for snakes and ladders, and being sent either back home or to the start square
-    public void AnimateToSpecialTile(Tile newTile)
+    public void AnimateToSpecialTile(Tile newTile, bool currentPlayer)
     {
         isAnimating = true;
         isAnimatingSnakeOrLadder = true;
+        isCurrentPlayerAnimation = currentPlayer;
         targetPosition = newTile.transform.position;
         moveQueue = new Tile[moveQueue.Length];
         moveQueueIndex = moveQueue.Length;
@@ -158,7 +169,8 @@ public class PlayerPiece : MonoBehaviour
             //finished all animations, check for victory state
             isAnimating = false;
             //currentTile.PlayerPiece = this;
-            GameManager.instance.UpdateGameState(GameState.CheckForVictory);            
+            if(isCurrentPlayerAnimation)
+                GameManager.instance.UpdateGameState(GameState.CheckForVictory);            
         }
     }
 
@@ -212,6 +224,8 @@ public class PlayerPiece : MonoBehaviour
         // move this piece
         int spacesToMove = GameManager.instance.DiceTotal;
 
+        isCurrentPlayerAnimation = true;
+
         moveQueue = new Tile[spacesToMove];
 
         // if we are on a tile then remove this piece from it
@@ -221,7 +235,7 @@ public class PlayerPiece : MonoBehaviour
         if (spacesToMove == 6 && GameManager.instance.CurrentPlayerRollAgainCount == GameManager.instance.MaximumRollAgain - 1)
         {
             // we have now rolled the maximum number of consecutive 6's, send the player to the start
-            AnimateToSpecialTile(BoardManager.instance.GetTile(0));
+            AnimateToSpecialTile(BoardManager.instance.GetTile(0), true);
             GameManager.instance.SetInfoText("You have rolled too many 6's!  Back to the start!");
             return;
         }
